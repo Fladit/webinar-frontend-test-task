@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import {useCallback} from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -7,10 +7,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import classnames from 'classnames';
-import { motion } from 'framer-motion';
-import { TodoItem, useTodoItems } from './TodoItemsContext';
+import {motion} from 'framer-motion';
+import {TodoItem, TodoItemsActionTypes, useTodoItems} from './TodoItemsContext';
 import {Draggable} from "react-beautiful-dnd";
 
 const spring = {
@@ -77,14 +77,14 @@ export const TodoItemCard = function ({ item }: { item: TodoItem}) {
     const { dispatch } = useTodoItems();
 
     const handleDelete = useCallback(
-        () => dispatch({ type: 'delete', data: { id: item.id } }),
+        () => dispatch({ type: TodoItemsActionTypes.DELETE, data: { id: item.id } }),
         [item.id, dispatch],
     );
 
     const handleToggleDone = useCallback(
         () =>
             dispatch({
-                type: 'toggleDone',
+                type: TodoItemsActionTypes.TOGGLE_DONE,
                 data: { id: item.id },
             }),
         [item.id, dispatch],

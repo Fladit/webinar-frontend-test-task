@@ -1,7 +1,7 @@
 import React from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import {TodoItemsList} from "./TodoItems";
-import {TodoItem, useTodoItems} from "./TodoItemsContext";
+import {TodoItem, TodoItemsActionTypes, useTodoItems} from "./TodoItemsContext";
 
 const reorder = (list: TodoItem[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -23,8 +23,9 @@ const DragDropBoard = () => {
             result.source.index,
             result.destination.index
         );
+        console.log(items)
 
-        dispatch({type: "setTodos", data: {todoItems: items}})
+        dispatch({type: TodoItemsActionTypes.SET_TODOS, data: {todoItems: items}})
     }
     return (
         <DragDropContext onDragEnd={onDragEnd}>

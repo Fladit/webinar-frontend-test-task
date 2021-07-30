@@ -13,26 +13,40 @@ export interface TodoItem {
     done: boolean;
 }
 
+export enum TodoItemsActionTypes {
+    LOAD_STATE = 'loadState',
+    SET_TODOS = 'setTodos',
+    ADD = 'add',
+    DELETE = 'delete',
+    TOGGLE_DONE = 'toggleDone',
+}
+
 interface TodoItemsState {
     todoItems: TodoItem[];
 }
 
 interface AddedTodoItem {
-    title?: string;
+    title: string;
     details?: string;
 }
 
 
-interface TodoItemsActionData {
-    todoItem?: TodoItem | AddedTodoItem,
-    todoItems?: TodoItem[],
-    id?: string,
+interface TodoItemsLoadStateAndSetTodosAction {
+    type: TodoItemsActionTypes.LOAD_STATE | TodoItemsActionTypes.SET_TODOS,
+    data: TodoItemsState
 }
 
-interface TodoItemsAction {
-    type: 'loadState' | 'setTodos' | 'add' | 'delete' | 'toggleDone';
-    data: TodoItemsActionData;
+interface TodoItemsAddAction {
+    type: TodoItemsActionTypes.ADD,
+    data: {todoItem: AddedTodoItem}
 }
+
+interface TodoItemsDeleteAndToggleDoneAction {
+    type: TodoItemsActionTypes.DELETE | TodoItemsActionTypes.TOGGLE_DONE,
+    data: {id: string}
+}
+
+type TodoItemsAction = TodoItemsLoadStateAndSetTodosAction | TodoItemsAddAction | TodoItemsDeleteAndToggleDoneAction
 
 const TodoItemsContext = createContext<
     (TodoItemsState & { dispatch: (action: TodoItemsAction) => void }) | null
@@ -53,7 +67,7 @@ export const TodoItemsContextProvider = ({
 
         if (savedState) {
             try {
-                dispatch({ type: 'loadState', data: JSON.parse(savedState) });
+                dispatch({ type: TodoItemsActionTypes.LOAD_STATE, data: JSON.parse(savedState) });
             } catch {}
         }
     }, []);
@@ -83,16 +97,16 @@ export const useTodoItems = () => {
 
 function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction): TodoItemsState {
     switch (action.type) {
-        case 'loadState': {
+        case TodoItemsActionTypes.LOAD_STATE: {
             return action.data;
         }
-        case 'setTodos': {
+        case TodoItemsActionTypes.SET_TODOS: {
             return {
                 ...state,
                 todoItems: action.data.todoItems
             }
         }
-        case 'add':
+        case TodoItemsActionTypes.ADD:
             return {
                 ...state,
                 todoItems: [
@@ -100,14 +114,14 @@ function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction): TodoI
                     ...state.todoItems,
                 ],
             };
-        case 'delete':
+        case TodoItemsActionTypes.DELETE:
             return {
                 ...state,
                 todoItems: state.todoItems.filter(
                     ({ id }) => id !== action.data.id,
                 ),
             };
-        case 'toggleDone':
+        case TodoItemsActionTypes.TOGGLE_DONE:
             const itemIndex = state.todoItems.findIndex(
                 ({ id }) => id === action.data.id,
             );
