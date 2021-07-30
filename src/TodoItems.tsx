@@ -25,9 +25,12 @@ const useTodoItemListStyles = makeStyles({
         listStyle: 'none',
         padding: 0,
     },
+    todoItemRoot: {
+        marginTop: 24,
+    },
 });
 
-export const TodoItemsList = function ({todoItems}: {todoItems: TodoItem[]}) {
+export const TodoItemsList = function ({todoItems, isDragged}: {todoItems: TodoItem[], isDragged: boolean}) {
     const classes = useTodoItemListStyles();
 
     const sortedItems = todoItems.slice().sort((a, b) => {
@@ -45,10 +48,10 @@ export const TodoItemsList = function ({todoItems}: {todoItems: TodoItem[]}) {
     return (
         <ul className={classes.root}>
             {sortedItems.map((item, index) => (
-                <motion.li key={item.id} transition={spring} layout={true}>
+                <motion.li key={item.id} transition={spring} layout={!isDragged}>
                     <Draggable draggableId={item.id} index={index}>
                         {(provided => (
-                            <div ref={provided.innerRef}
+                            <div className={classes.todoItemRoot} ref={provided.innerRef}
                                  {...provided.draggableProps}
                                  {...provided.dragHandleProps}>
                                 <TodoItemCard item={item}/>
@@ -62,10 +65,6 @@ export const TodoItemsList = function ({todoItems}: {todoItems: TodoItem[]}) {
 };
 
 const useTodoItemCardStyles = makeStyles({
-    root: {
-        marginTop: 24,
-        marginBottom: 24,
-    },
     doneRoot: {
         textDecoration: 'line-through',
         color: '#888888',
@@ -92,7 +91,7 @@ export const TodoItemCard = function ({ item }: { item: TodoItem}) {
 
     return (
         <Card
-            className={classnames(classes.root, {
+            className={classnames({
                 [classes.doneRoot]: item.done,
             })}
         >

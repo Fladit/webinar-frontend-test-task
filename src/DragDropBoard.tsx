@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 import {TodoItemsList} from "./TodoItems";
 import {TodoItem, TodoItemsActionTypes, useTodoItems} from "./TodoItemsContext";
@@ -13,6 +13,11 @@ const reorder = (list: TodoItem[], startIndex: number, endIndex: number) => {
 
 const DragDropBoard = () => {
     const { todoItems, dispatch } = useTodoItems();
+    const [isDragged, setIsDragged] = useState(false)
+
+    function onBeforeCapture() {
+        setIsDragged(true)
+    }
     function onDragEnd(result: any) {
         if (!result.destination) {
             return;
@@ -23,18 +28,18 @@ const DragDropBoard = () => {
             result.source.index,
             result.destination.index
         );
-        console.log(items)
 
+        setIsDragged(false)
         dispatch({type: TodoItemsActionTypes.SET_TODOS, data: {todoItems: items}})
     }
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext onDragEnd={onDragEnd} onBeforeCapture={onBeforeCapture}>
             <Droppable droppableId={"droppable"}>
                 {(provided) => (
                     <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}>
-                        <TodoItemsList todoItems={todoItems}/>
+                        <TodoItemsList todoItems={todoItems} isDragged={isDragged}/>
                         {provided.placeholder}
                     </div>
                 )}
