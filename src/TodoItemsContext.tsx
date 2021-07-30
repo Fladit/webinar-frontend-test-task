@@ -17,16 +17,28 @@ interface TodoItemsState {
     todoItems: TodoItem[];
 }
 
+interface AddedTodoItem {
+    title?: string;
+    details?: string;
+}
+
+
+interface TodoItemsActionData {
+    todoItem?: TodoItem | AddedTodoItem,
+    todoItems?: TodoItem[],
+    id?: string,
+}
+
 interface TodoItemsAction {
     type: 'loadState' | 'setTodos' | 'add' | 'delete' | 'toggleDone';
-    data: any;
+    data: TodoItemsActionData;
 }
 
 const TodoItemsContext = createContext<
     (TodoItemsState & { dispatch: (action: TodoItemsAction) => void }) | null
 >(null);
 
-const defaultState = { todoItems: [] };
+const defaultState: TodoItemsState = { todoItems: [] };
 const localStorageKey = 'todoListState';
 
 export const TodoItemsContextProvider = ({
@@ -69,7 +81,7 @@ export const useTodoItems = () => {
     return todoItemsContext;
 };
 
-function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
+function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction): TodoItemsState {
     switch (action.type) {
         case 'loadState': {
             return action.data;
