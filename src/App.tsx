@@ -6,6 +6,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { TodoItemsList } from './TodoItems';
 import { TodoItemsContextProvider } from './TodoItemsContext';
 import TodoItemForm from './TodoItemForm';
+import DragDropBoard from "./DragDropBoard";
 
 const theme = createMuiTheme({
     palette: {
@@ -38,7 +39,7 @@ function Content() {
             </header>
             <main>
                 <TodoItemForm />
-                <TodoItemsList />
+                <DragDropBoard />
             </main>
         </Container>
     );

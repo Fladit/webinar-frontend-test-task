@@ -18,7 +18,7 @@ interface TodoItemsState {
 }
 
 interface TodoItemsAction {
-    type: 'loadState' | 'add' | 'delete' | 'toggleDone';
+    type: 'loadState' | 'setTodos' | 'add' | 'delete' | 'toggleDone';
     data: any;
 }
 
@@ -73,6 +73,12 @@ function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
     switch (action.type) {
         case 'loadState': {
             return action.data;
+        }
+        case 'setTodos': {
+            return {
+                ...state,
+                todoItems: action.data.todoItems
+            }
         }
         case 'add':
             return {

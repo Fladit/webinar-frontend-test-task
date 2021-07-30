@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import { motion } from 'framer-motion';
 import { TodoItem, useTodoItems } from './TodoItemsContext';
+import {Draggable} from "react-beautiful-dnd";
 
 const spring = {
     type: 'spring',
@@ -26,9 +27,7 @@ const useTodoItemListStyles = makeStyles({
     },
 });
 
-export const TodoItemsList = function () {
-    const { todoItems } = useTodoItems();
-
+export const TodoItemsList = function ({todoItems}: {todoItems: TodoItem[]}) {
     const classes = useTodoItemListStyles();
 
     const sortedItems = todoItems.slice().sort((a, b) => {
@@ -45,9 +44,17 @@ export const TodoItemsList = function () {
 
     return (
         <ul className={classes.root}>
-            {sortedItems.map((item) => (
+            {sortedItems.map((item, index) => (
                 <motion.li key={item.id} transition={spring} layout={true}>
-                    <TodoItemCard item={item} />
+                    <Draggable draggableId={item.id} index={index}>
+                        {(provided => (
+                            <div ref={provided.innerRef}
+                                 {...provided.draggableProps}
+                                 {...provided.dragHandleProps}>
+                                <TodoItemCard item={item}/>
+                            </div>
+                        ))}
+                    </Draggable>
                 </motion.li>
             ))}
         </ul>
@@ -65,7 +72,7 @@ const useTodoItemCardStyles = makeStyles({
     },
 });
 
-export const TodoItemCard = function ({ item }: { item: TodoItem }) {
+export const TodoItemCard = function ({ item }: { item: TodoItem}) {
     const classes = useTodoItemCardStyles();
     const { dispatch } = useTodoItems();
 
