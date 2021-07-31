@@ -71,8 +71,14 @@ export const TodoItemsContextProvider = ({
     }, []);
 
     useEffect(() => {
+        // Синхронизация данных в нескольких вкладках + предупреждение о заполненности хранилища
         window.removeEventListener('storage', storageListener);
-        localStorage.setItem(localStorageKey, JSON.stringify(state));
+        try {
+            localStorage.setItem(localStorageKey, JSON.stringify(state));
+        }
+        catch (e) {
+            alert("Local Storage is full, please empty data")
+        }
         window.addEventListener('storage', storageListener);
     }, [state]);
 
