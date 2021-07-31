@@ -1,6 +1,6 @@
-import {
+import React, {
     createContext,
-    ReactNode,
+    ReactNode, useCallback,
     useContext,
     useEffect,
     useReducer,
@@ -61,19 +61,19 @@ export const TodoItemsContextProvider = ({
     children?: ReactNode;
 }) => {
     const [state, dispatch] = useReducer(todoItemsReducer, defaultState);
+    const storageListener = useCallback(() => {
+        loadState(dispatch)
+    }, [])
 
     useEffect(() => {
-        const savedState = localStorage.getItem(localStorageKey);
-
-        if (savedState) {
-            try {
-                dispatch({ type: TodoItemsActionTypes.LOAD_STATE, data: JSON.parse(savedState) });
-            } catch {}
-        }
+        loadState(dispatch)
+        window.addEventListener('storage', storageListener);
     }, []);
 
     useEffect(() => {
+        window.removeEventListener('storage', storageListener);
         localStorage.setItem(localStorageKey, JSON.stringify(state));
+        window.addEventListener('storage', storageListener);
     }, [state]);
 
     return (
@@ -82,6 +82,15 @@ export const TodoItemsContextProvider = ({
         </TodoItemsContext.Provider>
     );
 };
+
+const loadState = (dispatch: React.Dispatch<TodoItemsAction>) => {
+    const savedState = localStorage.getItem(localStorageKey);
+    if (savedState) {
+        try {
+            dispatch({ type: TodoItemsActionTypes.LOAD_STATE, data: JSON.parse(savedState) });
+        } catch {}
+    }
+}
 
 export const useTodoItems = () => {
     const todoItemsContext = useContext(TodoItemsContext);
